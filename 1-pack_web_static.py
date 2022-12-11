@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+<<<<<<< HEAD
 # -*- coding: utf-8 -*-
 """
 Created on Mon Aug 13 14:21:54 2020
@@ -22,5 +23,21 @@ def do_pack():
     name = '{}.tgz'.format(path)
     if name:
         return name
+=======
+# module that holds method that generates a .tgz archive
+
+from fabric.api import local
+import datetime
+
+
+def do_pack():
+    """ Generates a .tgz archive """
+    local("mkdir -p versions")
+    t = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+    archive = local("tar -czvf versions/web_static_{}\
+.tgz web_static".format(t))
+    if archive:
+        return ("versions/web_static_{}".format(t))
+>>>>>>> 1d1ce3f8855858bbe28f1137f2b8da40c8f9af22
     else:
         return None
