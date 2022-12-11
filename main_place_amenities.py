@@ -1,14 +1,17 @@
 #!/usr/bin/python3
 """ Test link Many-To-Many Place <> Amenity
 """
-from models import *
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
+from models.user import User
+from models import storage
 
-print("BEFORE")
 # creation of a State
 state = State(name="California")
-print("MADE!!!")
 state.save()
-print("AFTER")
 
 # creation of a City
 city = City(state_id=state.id, name="San Francisco")

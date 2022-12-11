@@ -1,29 +1,31 @@
 #!/usr/bin/python3
-# web app that connects our html from previous project
-from flask import Flask, render_template
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Sep  1 14:42:23 2020
+
+@author: Robinson Montes
+"""
 from models import storage
 from models.state import State
 from models.amenity import Amenity
+from flask import Flask, render_template
 app = Flask(__name__)
-app.url_map.strict_slashes = False
-ip = '0.0.0.0'
-port = 5000
-
-
-@app.route('/hbnb_filters')
-def hbnb():
-    # website that connects html and css
-    states = list(storage.all(State).values())
-    amenities = list(storage.all(Amenity).values())
-    return render_template('10-hbnb_filters.html',
-                           states=states,
-                           amenities=amenities)
 
 
 @app.teardown_appcontext
-def teardown(self):
-    # tears down app context
+def appcontext_teardown(self):
+    """use storage for fetching data from the storage engine
+    """
     storage.close()
 
+
+@app.route('/hbnb_filters', strict_slashes=False)
+def state_id():
+    """Display a HTML page inside the tag BODY"""
+    return render_template('10-hbnb_filters.html',
+                           states=storage.all(State),
+                           amenities=storage.all(Amenity))
+
+
 if __name__ == '__main__':
-    app.run(host=ip, port=port)
+    app.run(host='0.0.0.0', port=5000)
