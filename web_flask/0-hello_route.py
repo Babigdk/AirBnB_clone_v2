@@ -1,19 +1,23 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue Sep  1 11:15:54 2020
-
-@author: Robinson Montes
+Routes Hello
 """
 from flask import Flask
+
+
 app = Flask(__name__)
 
 
-@app.route('/', strict_slashes=False)
-def hello():
-    """Start a basic Flask web application"""
+@app.route('/')
+def hello_world(strict_slashes=False):
+    """
+    Hello World
+
+    Returns:
+        [String] -- [Hello HBNB!]
+    """
     return 'Hello HBNB!'
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')

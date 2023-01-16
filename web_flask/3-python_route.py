@@ -1,38 +1,68 @@
 #!/usr/bin/python3
-# -*- coding: utf-8 -*-
 """
-Created on Tue Sep  1 14:42:23 2020
-
-@author: Robinson Montes
+Routes Hello
 """
 from flask import Flask
+import os
+
+
 app = Flask(__name__)
 
 
-@app.route('/', strict_slashes=False)
-def hello():
-    """Start a basic Flask web application"""
+@app.route('/')
+def hello_world(strict_slashes=False):
+    """
+    Hello World
+
+    Returns:
+        [String] -- [Hello HBNB!]
+    """
     return 'Hello HBNB!'
 
 
-@app.route('/hbnb', strict_slashes=False)
-def hbnb():
-    """Adding a specific route /hbnb"""
+@app.route('/hbnb')
+def hbnb(strict_slashes=False):
+    """
+    HBNB
+
+    Returns:
+        [String] -- [HBNB]
+    """
     return 'HBNB'
 
 
-@app.route('/c/<string:text>', strict_slashes=False)
-def c_text(text=None):
-    """Dynamic inputed text: replace _ for space and show text"""
-    return "C {}".format(text.replace('_', ' '))
+@app.route('/c/<path:subpath>')
+def cisfun(subpath, strict_slashes=False):
+    """
+    HBNB
+
+    Returns:
+        [String] -- [HBNB]
+    """
+    return 'C {}'.format(subpath.replace('_', ' '))
 
 
-@app.route('/python/', strict_slashes=False)
-@app.route('/python/<string:text>', strict_slashes=False)
-def python_text(text='is_cool'):
-    """Dynamic inputed text: replace _ for space and show text"""
-    return "Python {}".format(text.replace('_', ' '))
+@app.route('/python/<path:subpath>')
+def pythonwpath(subpath, strict_slashes=False):
+    """
+    HBNB
+
+    Returns:
+        [String] -- [HBNB]
+    """
+    return 'Python {}'.format(subpath.replace('_', ' '))
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+@app.route('/python/')
+def pythonwoutpath(strict_slashes=False):
+    """
+    HBNB
+
+    Returns:
+        [String] -- [HBNB]
+    """
+    return 'Python is cool'
+
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0')

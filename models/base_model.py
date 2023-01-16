@@ -9,10 +9,10 @@ from sqlalchemy.ext.declarative import declarative_base
 Base = declarative_base()
 
 
-class BaseModel():
+class BaseModel:
     """A base class for all hbnb models"""
 
-    id = Column(String(60), primary_key=True)
+    id = Column(String(60), unique=True, primary_key=True, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
 
@@ -22,22 +22,20 @@ class BaseModel():
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+
         else:
-            if 'updated_at' in kwargs:
-                kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
-                                                         '%Y-%m-%dT%H:%M:%S.%f'
-                                                         )
-            else:
-                self.updated_at = datetime.now()
-            if 'created_at' in kwargs:
-                kwargs['created_at'] = datetime.strptime(kwargs['created_at'],
-                                                         '%Y-%m-%dT%H:%M:%S.%f'
-                                                         )
-            else:
-                self.created_at = datetime.now()
-            if 'id' not in kwargs:
+            for key, value in kwargs.items():
+                if key == "created_at" or key == "updated_at":
+                    value = datetime.strptime(
+                        kwargs[key], '%Y-%m-%dT%H:%M:%S.%f')
+                if key != "__class__":
+                    setattr(self, key, value)
+            if "id" not in kwargs.keys():
                 self.id = str(uuid.uuid4())
-            self.__dict__.update(kwargs)
+            if "created_at" not in kwargs.keys():
+                self.created_at = datetime.now()
+            if "updated_at" not in kwargs.keys():
+                self.updated_at = datetime.now()
 
     def __str__(self):
         """Returns a string representation of the instance"""
@@ -51,21 +49,22 @@ class BaseModel():
         storage.new(self)
         storage.save()
 
+    def delete(self):
+        """Deletes an instance from storage"""
+        from models import storage
+        storage.delete(self)
+
     def to_dict(self):
         """Convert instance into dict format"""
         dictionary = {}
         dictionary.update(self.__dict__)
+
+        # remove the key if it exists
+        if (dictionary.get("_sa_instance_state")):
+            dictionary.pop("_sa_instance_state")
+
         dictionary.update({'__class__':
                           (str(type(self)).split('.')[-1]).split('\'')[0]})
-        if "_sa_instance_state" in dictionary:
-            del dictionary["_sa_instance_state"]
         dictionary['created_at'] = self.created_at.isoformat()
         dictionary['updated_at'] = self.updated_at.isoformat()
         return dictionary
-
-    def delete(self):
-        """public instance method to delete the current instance from
-        the storage (models.storage)
-        """
-        from models import storage
-        storage.delete(self)

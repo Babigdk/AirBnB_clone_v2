@@ -1,67 +1,68 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
-from sqlalchemy import Column, String, Integer, ForeignKey, Float, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, Float, Table
 from sqlalchemy.orm import relationship
+import models
 
 
 place_amenity = Table('place_amenity', Base.metadata,
                       Column('place_id', String(60), ForeignKey('places.id'),
                              primary_key=True, nullable=False),
                       Column('amenity_id', String(60),
-                             ForeignKey('amenities.id'), primary_key=True,
-                             nullable=False)
+                             ForeignKey('amenities.id'),
+                             primary_key=True, nullable=False)
                       )
 
 
 class Place(BaseModel, Base):
     """ A place to stay """
     __tablename__ = "places"
-    city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
-    user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
+    amenities = relationship("Amenity", secondary='place_amenity',
+                             back_populates="place_amenities", viewonly=False)
+    city_id = Column(String(60), ForeignKey('cities.id'),
+                     nullable=False)
+    user_id = Column(String(60), ForeignKey('users.id'),
+                     nullable=False)
     name = Column(String(128), nullable=False)
-    description = Column(String(1024))
+    description = Column(String(1024), nullable=True)
     number_rooms = Column(Integer, nullable=False, default=0)
-    number_bathrooms = Column(Integer, nullable=False, default=0)
+    number_bathrooms = Column(Integer, nullable=False,
+                              default=0)
     max_guest = Column(Integer, nullable=False, default=0)
-    price_by_night = Column(Integer, nullable=False, default=0)
-    latitude = Column(Float)
-    longitude = Column(Float)
-    reviews = relationship("Review", backref='place', cascade="all, delete")
-    amenities = relationship("Amenity", secondary=place_amenity,
-                             viewonly=False)
+    price_by_night = Column(Integer, nullable=False,
+                            default=0)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
+    # amenity_ids = []
+    # Below line is commented out for caution and was added in Task 9
+    reviews = relationship("Review", cascade="delete", backref="place")
 
     @property
     def reviews(self):
-        """Getter attribute reviews that returns the list of Review instances
-        with place_id equals to the current Place.id
-        """
-        from models import storage
-        my_list = []
-        extracted_reviews = storage.all('Review').values()
-        for review in extracted_reviews:
-            if self.id == review.place_id:
-                my_list.append(review)
-        return my_list
+        """ reviews method """
+        dict_reviews = models.storage.all(models.Review)
+        list_reviews = []
+        for rev in dict_reviews.values():
+            if rev.place_id == self.id:
+                list_reviews.append(rev)
+            return rev
 
     @property
     def amenities(self):
-        """Getter attribute that returns the list of Amenity instances based on
-        the attribute amenity_ids that contains all Amenity.id linked to the
-        Place.
-        """
-        from models import storage
-        my_list = []
-        extracted_amenities = storage.all('Amenity').values()
-        for amenity in extracted_amenities:
-            if self.id == amenity.amenity_ids:
-                my_list.append(amenity)
-        return my_list
+        """ getter attribute amenitites that returns the list of...
+            ...Amenity instances """
+        list_obj = []
+        amen_objs = models.storage.all('Amenity')
+        for am in amen_objs.values():
+            if amenity.id in amenity_ids:
+                list_obj.append(amenity)
+            return list_obj
 
     @amenities.setter
-    def amenities(self, obj):
-        """Setter attribute that handles append method for adding an Amenity.id
-        to the attribute amenity_ids.
-        """
-        if isinstance(obj, 'Amenity'):
-            self.amenity_id.append(obj.id)
+    def amenitites(self, obj):
+        """ setter attribute amenities that handles append method for adding...
+            ...an Amenity.id to the attribute amenity_ids """
+        if isinstance(obj, Amenity):
+            if self.id == obj.place_id:
+                self.amenity_ids.append(obj.id)
