@@ -8,6 +8,7 @@ app = Flask(__name__)
 
 
 @app.route('/airbnb-onepage/', strict_slashes=False)
+
 def hello():
     """Display a hello message"""
     return "Hello HBNB!"
